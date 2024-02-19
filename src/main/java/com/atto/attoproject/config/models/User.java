@@ -44,15 +44,13 @@ public class User extends BaseEntity {
           inverseJoinColumns = @JoinColumn(name = "role_id"))
   private Set<Role> roles = new HashSet<>();
 
-  public User(String username, String userId, String password) {
+  public User(String username, String userId, String password, Set<Role> roles) {
     this.username = username;
     this.userId = userId;
     this.password = password;
-  }
-
-  public void setRoles(Set<Role> roles) {
     this.roles = roles;
   }
+
 
   public Long getId() {
     return id;

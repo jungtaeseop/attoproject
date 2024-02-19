@@ -1,4 +1,4 @@
-package com.atto.attoproject.config.payload.controllers;
+package com.atto.attoproject.config.controllers;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;

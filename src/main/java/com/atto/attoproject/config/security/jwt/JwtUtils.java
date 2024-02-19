@@ -30,7 +30,7 @@ public class JwtUtils {
   public static final String BEARER_PREFIX = "Bearer ";
 
   // 토큰 유효시간 30분
-  private long tokenValidTime = 30 * 60 * 1000L;
+  private long tokenValidTime = 60 * 60 * 1000L;
 
   @Value("${jwt.secret-key}")
   private String secretKey;
@@ -54,18 +54,6 @@ public class JwtUtils {
             .setIssuedAt(now)   // 토큰 발행 시간 정보
             .setExpiration(new Date(now.getTime() + tokenValidTime))  //만료 시간 설정
             .signWith(SignatureAlgorithm.HS256, secretKey)            // 사용할 암호화 알고리즘과 signature 에 들어갈 secret값 세팅
-            .compact();
-  }
-
-  public String generateJwtToken(Authentication authentication) {
-
-    UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-
-    return Jwts.builder()
-            .setSubject((userPrincipal.getUsername()))
-            .setIssuedAt(new Date())
-            .setExpiration(new Date((new Date()).getTime() + tokenValidTime))
-            .signWith(SignatureAlgorithm.HS256, secretKey)
             .compact();
   }
 

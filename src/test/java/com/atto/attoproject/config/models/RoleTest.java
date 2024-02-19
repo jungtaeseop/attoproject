@@ -18,7 +18,7 @@ class RoleTest {
     private RoleRepository roleRepository;
 
 
-    @Rollback(value = true)
+    @Rollback(value = false)
     @Transactional
     @Test
     void roleSave() {
