@@ -1,8 +1,7 @@
 package com.atto.attoproject.config.security.jwt;
 
 
-import com.atto.attoproject.config.models.User;
-import com.atto.attoproject.config.service.UserDetailsImpl;
+import com.atto.attoproject.service.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

@@ -4,7 +4,7 @@ package com.atto.attoproject.config.security;
 import com.atto.attoproject.config.security.jwt.AuthEntryPointJwt;
 import com.atto.attoproject.config.security.jwt.AuthTokenFilter;
 import com.atto.attoproject.config.security.jwt.JwtUtils;
-import com.atto.attoproject.config.service.UserDetailsServiceImpl;
+import com.atto.attoproject.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

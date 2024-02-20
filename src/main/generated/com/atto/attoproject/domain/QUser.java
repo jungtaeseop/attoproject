@@ -7,31 +7,26 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
- * QAuditLog is a Querydsl query type for AuditLog
+ * QUser is a Querydsl query type for User
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QAuditLog extends EntityPathBase<AuditLog> {
+public class QUser extends EntityPathBase<User> {
 
-    private static final long serialVersionUID = -524491843L;
+    private static final long serialVersionUID = 2006899743L;
 
-    public static final QAuditLog auditLog = new QAuditLog("auditLog");
+    public static final QUser user = new QUser("user");
 
     public final com.atto.attoproject.config.basedomain.QBaseEntity _super = new com.atto.attoproject.config.basedomain.QBaseEntity(this);
-
-    public final StringPath action = createString("action");
 
     //inherited
     public final StringPath createdBy = _super.createdBy;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
-
-    public final StringPath data = createString("data");
-
-    public final StringPath entity = createString("entity");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
@@ -41,18 +36,24 @@ public class QAuditLog extends EntityPathBase<AuditLog> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> lastModifiedDate = _super.lastModifiedDate;
 
-    public final StringPath principal = createString("principal");
+    public final StringPath password = createString("password");
 
-    public QAuditLog(String variable) {
-        super(AuditLog.class, forVariable(variable));
+    public final SetPath<Role, QRole> roles = this.<Role, QRole>createSet("roles", Role.class, QRole.class, PathInits.DIRECT2);
+
+    public final StringPath userId = createString("userId");
+
+    public final StringPath username = createString("username");
+
+    public QUser(String variable) {
+        super(User.class, forVariable(variable));
     }
 
-    public QAuditLog(Path<? extends AuditLog> path) {
+    public QUser(Path<? extends User> path) {
         super(path.getType(), path.getMetadata());
     }
 
-    public QAuditLog(PathMetadata metadata) {
-        super(AuditLog.class, metadata);
+    public QUser(PathMetadata metadata) {
+        super(User.class, metadata);
     }
 
 }
