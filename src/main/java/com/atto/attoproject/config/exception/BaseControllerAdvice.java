@@ -1,32 +1,28 @@
 package com.atto.attoproject.config.exception;
 
-import com.atto.attoproject.config.exception.error.ErrorResponseEntity;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureException;
+import com.atto.attoproject.config.basedto.BaseResponse;
+import com.atto.attoproject.config.exception.error.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
-@RestControllerAdvice
+@ControllerAdvice
 @RequiredArgsConstructor
 public class BaseControllerAdvice {
 
     @ExceptionHandler(CustomException.class)
     protected ResponseEntity<?> handleBaseException(CustomException e){
         log.error("CustomException - error : ", e);
-        return ErrorResponseEntity.toResponseEntity(e);
+        return BaseResponse.toResponseEntity(e);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -46,6 +42,6 @@ public class BaseControllerAdvice {
                 });
 
         CustomException customException = CustomException.of("401",String.join(",", messages),HttpStatus.UNAUTHORIZED);
-        return ErrorResponseEntity.toResponseEntity(customException);
+        return BaseResponse.toResponseEntity(customException);
     }
 }

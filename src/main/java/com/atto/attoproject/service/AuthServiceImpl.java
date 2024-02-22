@@ -1,6 +1,6 @@
 package com.atto.attoproject.service;
 
-import com.atto.attoproject.config.exception.CustomException;
+import com.atto.attoproject.config.exception.error.CustomException;
 import com.atto.attoproject.domain.enums.ERole;
 import com.atto.attoproject.domain.Role;
 import com.atto.attoproject.domain.User;

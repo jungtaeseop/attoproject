@@ -61,6 +61,7 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 비활성화
                 .authorizeHttpRequests(auth ->  // 인증 권한 설정
                                 auth.requestMatchers("/api/auth/**").permitAll()
+                                        .requestMatchers("/api/**").permitAll()
                                         .requestMatchers("/api/test/**").permitAll()
                                         .anyRequest().authenticated()
                         ///api/auth/** 및 /api/test/** 경로는 인증 없이 허용 그 외 모든 요청은 인증 필요

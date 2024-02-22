@@ -24,9 +24,6 @@ public class QAuditLog extends EntityPathBase<AuditLog> {
     public final StringPath action = createString("action");
 
     //inherited
-    public final StringPath createdBy = _super.createdBy;
-
-    //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
 
     public final StringPath data = createString("data");
@@ -34,9 +31,6 @@ public class QAuditLog extends EntityPathBase<AuditLog> {
     public final StringPath entity = createString("entity");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
-
-    //inherited
-    public final StringPath lastModifiedBy = _super.lastModifiedBy;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> lastModifiedDate = _super.lastModifiedDate;

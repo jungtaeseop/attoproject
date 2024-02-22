@@ -23,15 +23,9 @@ public class QUser extends EntityPathBase<User> {
     public final com.atto.attoproject.config.basedomain.QBaseEntity _super = new com.atto.attoproject.config.basedomain.QBaseEntity(this);
 
     //inherited
-    public final StringPath createdBy = _super.createdBy;
-
-    //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
-
-    //inherited
-    public final StringPath lastModifiedBy = _super.lastModifiedBy;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> lastModifiedDate = _super.lastModifiedDate;

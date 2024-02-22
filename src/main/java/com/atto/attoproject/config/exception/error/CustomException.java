@@ -1,5 +1,6 @@
-package com.atto.attoproject.config.exception;
+package com.atto.attoproject.config.exception.error;
 
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.ObjectUtils;

@@ -2,17 +2,10 @@ package com.atto.attoproject.domain;
 
 import com.atto.attoproject.config.basedomain.BaseEntity;
 import com.atto.attoproject.data.HostDto;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.util.StringUtils;
 
 @Getter
@@ -31,6 +24,9 @@ public class Host extends BaseEntity {
     @Column(unique = true)
     private String ip;
 
+    @OneToOne(mappedBy = "host", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private HostStatus status;
+
     public Host(HostDto hostDto) {
         this.name = hostDto.getName();
         this.ip = hostDto.getIp();
@@ -48,4 +44,5 @@ public class Host extends BaseEntity {
             this.ip = hostDto.getIp();
         }
     }
+
 }

@@ -1,10 +1,12 @@
 package com.atto.attoproject.controller;
 
-import com.atto.attoproject.config.exception.CustomException;
-import com.atto.attoproject.config.exception.error.ErrorResponseEntity;
+import com.atto.attoproject.config.basedto.BaseResponse;
+import com.atto.attoproject.config.exception.error.CustomException;
+import com.atto.attoproject.data.HostStatusDto;
 import com.atto.attoproject.data.request.HostRequest;
 import com.atto.attoproject.data.HostDto;
 import com.atto.attoproject.domain.Host;
+import com.atto.attoproject.domain.HostStatus;
 import com.atto.attoproject.service.HostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
+//@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/api/hosts")
 public class HostController {
     private final HostService hostService;
@@ -46,8 +48,19 @@ public class HostController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteHost(@PathVariable("id") Long id) {
+    public BaseResponse<?> deleteHost(@PathVariable("id") Long id) {
         hostService.delete(id);
-        return ErrorResponseEntity.toResponseEntity(CustomException.of("200","삭제 완료", HttpStatus.OK));
+        return BaseResponse.successMessage();
+    }
+
+    @GetMapping("/check/{id}")
+    public BaseResponse<HostStatusDto> checkHost(@PathVariable("id") Long id) {
+        HostStatusDto hostStatusDto = hostService.checkHostStatus(id);
+        return BaseResponse.success(hostStatusDto);
+    }
+
+    @GetMapping("/check-all")
+    public BaseResponse<List<HostStatusDto>> getAllHostsStatus() {
+        return BaseResponse.success(hostService.checkHostStatusAll());
     }
 }
