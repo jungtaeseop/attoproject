@@ -55,7 +55,7 @@ public class HostServiceImpl implements HostService {
         Host host = hostRepository.findById(id)
                 .orElseThrow(() -> CustomException.of("404", "host 값을 찾을수 없습니다.", HttpStatus.BAD_REQUEST));
         host.update(hostDto);
-        return hostRepository.save(host);
+        return host;
     }
 
     @Transactional

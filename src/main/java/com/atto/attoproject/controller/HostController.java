@@ -45,8 +45,9 @@ public class HostController {
     }
 
     @PutMapping("/{id}")
-    public Host updateHost(@PathVariable("id") Long id, @Valid @RequestBody HostRequest hostRequest) {
-        return hostService.updateHost(id, hostRequest.toDto());
+    public HostDto updateHost(@PathVariable("id") Long id, @Valid @RequestBody HostRequest hostRequest) {
+        Host host = hostService.updateHost(id, hostRequest.toDto());
+        return HostDto.of(host);
     }
 
     @DeleteMapping("/{id}")
