@@ -38,7 +38,7 @@ public class HostStatusDto {
     public void updateStatus() {
         try {
             InetAddress address = InetAddress.getByName(this.ip);
-            this.alive = address.isReachable(1) ? Alive.Enabled : Alive.Disabled;
+            this.alive = address.isReachable(100) ? Alive.Enabled : Alive.Disabled;
             this.lastStatusCheckeDate = LocalDateTime.now();
         } catch (Exception e) {
             //e.printStackTrace();
