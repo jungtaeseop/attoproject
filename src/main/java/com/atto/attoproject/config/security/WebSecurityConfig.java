@@ -4,6 +4,7 @@ package com.atto.attoproject.config.security;
 import com.atto.attoproject.config.security.jwt.AuthEntryPointJwt;
 import com.atto.attoproject.config.security.jwt.AuthTokenFilter;
 import com.atto.attoproject.config.security.jwt.JwtUtils;
+import com.atto.attoproject.service.TokenBlacklistService;
 import com.atto.attoproject.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,12 +25,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class WebSecurityConfig {
     private final JwtUtils jwtUtils;
+    private final TokenBlacklistService tokenBlacklistService;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthEntryPointJwt unauthorizedHandler;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
-        return new AuthTokenFilter(jwtUtils);
+        return new AuthTokenFilter(jwtUtils, tokenBlacklistService);
     }
 
     @Bean
@@ -61,7 +63,6 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 비활성화
                 .authorizeHttpRequests(auth ->  // 인증 권한 설정
                                 auth.requestMatchers("/api/auth/**").permitAll()
-                                        .requestMatchers("/api/**").permitAll()
                                         .requestMatchers("/api/test/**").permitAll()
                                         .anyRequest().authenticated()
                         ///api/auth/** 및 /api/test/** 경로는 인증 없이 허용 그 외 모든 요청은 인증 필요

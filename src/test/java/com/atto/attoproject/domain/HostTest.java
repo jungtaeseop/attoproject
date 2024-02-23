@@ -8,6 +8,7 @@ import com.atto.attoproject.service.HostService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 class HostTest {
@@ -15,6 +16,7 @@ class HostTest {
     @Autowired
     private HostService hostService;
 
+    @Transactional
     @Test
     void saveTest() {
         for (int index = 1; index < 50; index++) {

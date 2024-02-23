@@ -10,6 +10,7 @@ import com.atto.attoproject.data.response.JwtResponse;
 import com.atto.attoproject.repository.RoleRepository;
 import com.atto.attoproject.repository.UserRepository;
 import com.atto.attoproject.config.security.jwt.JwtUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,12 +27,13 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class AuthServiceImpl implements AuthService{
+public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Override
     public JwtResponse authenticateUserJwtResponse(LoginRequest loginRequest) {
@@ -60,11 +62,19 @@ public class AuthServiceImpl implements AuthService{
         userRepository.save(user);
     }
 
+    @Override
+    public String logoutUser(HttpServletRequest request) {
+        String token = jwtUtils.resolveToken(request);
+        tokenBlacklistService.addToBlacklist(token);
+        return "Logged out successfully";
+    }
+
+
     private User createUserFromRequest(SignupRequest signUpRequest) {
         Set<Role> roles = determineUserRoles(signUpRequest);
         User user = new User(signUpRequest.getUsername(),
                 signUpRequest.getUserId(),
-                encoder.encode(signUpRequest.getPassword()),roles);
+                encoder.encode(signUpRequest.getPassword()), roles);
 
         return user;
     }
@@ -78,21 +88,23 @@ public class AuthServiceImpl implements AuthService{
                 switch (role) {
                     case "admin":
                         roles.add(roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found.")));
+                                .orElseThrow(() -> CustomException.of("400", "Error: Role을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST)));
                         break;
                     case "user":
                         roles.add(roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found.")));
+                                .orElseThrow(() -> CustomException.of("400", "Error: Role을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST)));
                         break;
                     default:
+                        roles.add(roleRepository.findByName(ERole.ROLE_USER)
+                                .orElseThrow(() -> CustomException.of("400", "Error: Role을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST)));
                         break;
                 }
             }
         }
 
-        if(strRoles.isEmpty()) {
+        if (strRoles.isEmpty()) {
             roles.add(roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found.")));
+                    .orElseThrow(() -> CustomException.of("400", "Error: Role을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST)));
         }
 
         return roles;
@@ -100,11 +112,11 @@ public class AuthServiceImpl implements AuthService{
 
     private void validateUniqueUsernameAndId(SignupRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            throw CustomException.of("400","Error: 사용자 이름이 이미 사용중입니다!", HttpStatus.BAD_REQUEST);
+            throw CustomException.of("400", "Error: 사용자 이름이 이미 사용중입니다!", HttpStatus.BAD_REQUEST);
         }
 
         if (userRepository.existsByUserId(signUpRequest.getUserId())) {
-            throw CustomException.of("400","Error: 사용자 ID가 이미 사용중입니다!", HttpStatus.BAD_REQUEST);
+            throw CustomException.of("400", "Error: 사용자 ID가 이미 사용중입니다!", HttpStatus.BAD_REQUEST);
         }
     }
 }

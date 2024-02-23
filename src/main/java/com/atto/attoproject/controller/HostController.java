@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-//@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/api/hosts")
 public class HostController {
     private final HostService hostService;

@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -17,36 +18,39 @@ public class QAuditLog extends EntityPathBase<AuditLog> {
 
     private static final long serialVersionUID = -524491843L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QAuditLog auditLog = new QAuditLog("auditLog");
 
-    public final com.atto.attoproject.config.basedomain.QBaseEntity _super = new com.atto.attoproject.config.basedomain.QBaseEntity(this);
+    public final DateTimePath<java.time.LocalDateTime> eventDateTime = createDateTime("eventDateTime", java.time.LocalDateTime.class);
 
-    public final StringPath action = createString("action");
+    public final StringPath eventOutcome = createString("eventOutcome");
 
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
-
-    public final StringPath data = createString("data");
-
-    public final StringPath entity = createString("entity");
+    public final StringPath eventType = createString("eventType");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> lastModifiedDate = _super.lastModifiedDate;
-
-    public final StringPath principal = createString("principal");
+    public final QUser user;
 
     public QAuditLog(String variable) {
-        super(AuditLog.class, forVariable(variable));
+        this(AuditLog.class, forVariable(variable), INITS);
     }
 
     public QAuditLog(Path<? extends AuditLog> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QAuditLog(PathMetadata metadata) {
-        super(AuditLog.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QAuditLog(PathMetadata metadata, PathInits inits) {
+        this(AuditLog.class, metadata, inits);
+    }
+
+    public QAuditLog(Class<? extends AuditLog> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.user = inits.isInitialized("user") ? new QUser(forProperty("user")) : null;
     }
 
 }

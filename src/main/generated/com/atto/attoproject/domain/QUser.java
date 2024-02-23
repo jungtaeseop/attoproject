@@ -22,6 +22,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final com.atto.attoproject.config.basedomain.QBaseEntity _super = new com.atto.attoproject.config.basedomain.QBaseEntity(this);
 
+    public final ListPath<AuditLog, QAuditLog> auditLogs = this.<AuditLog, QAuditLog>createList("auditLogs", AuditLog.class, QAuditLog.class, PathInits.DIRECT2);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
 

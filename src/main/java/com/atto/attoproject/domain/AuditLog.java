@@ -1,25 +1,33 @@
 package com.atto.attoproject.domain;
 
 import com.atto.attoproject.config.basedomain.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "audit_logs")
-public class AuditLog extends BaseEntity {
+public class AuditLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String principal;
+    private LocalDateTime eventDateTime; // 사건 발생 일시
+    private String eventType; // 사건 유형
+    private String eventOutcome; // 사건의 결과
 
-    private String action;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    private String entity;
+    public AuditLog(LocalDateTime eventDateTime, String eventType, String eventOutcome, User user) {
+        this.eventDateTime = eventDateTime;
+        this.eventType = eventType;
+        this.eventOutcome = eventOutcome;
+        this.user = user;
+    }
 
-    private String data;
-
+    public static AuditLog of(LocalDateTime eventDateTime, String eventType, String eventOutcome, User user) {
+        return new AuditLog(eventDateTime, eventType, eventOutcome, user);
+    }
 }

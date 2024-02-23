@@ -1,18 +1,11 @@
 package com.atto.attoproject.domain;
 
 import com.atto.attoproject.config.basedomain.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -34,10 +27,13 @@ public class User extends BaseEntity {
   private String username;
 
   @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(  name = "user_roles",
+  @JoinTable(name = "user_roles",
           joinColumns = @JoinColumn(name = "user_id"),
           inverseJoinColumns = @JoinColumn(name = "role_id"))
   private Set<Role> roles = new HashSet<>();
+
+  @OneToMany(mappedBy = "user" , cascade = CascadeType.PERSIST)
+  private List<AuditLog> auditLogs = new ArrayList<>();
 
   public User(String username, String userId, String password, Set<Role> roles) {
     this.username = username;
