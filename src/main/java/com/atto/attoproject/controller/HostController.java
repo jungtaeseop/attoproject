@@ -31,12 +31,14 @@ public class HostController {
         return HostDto.of(host);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/list")
     public List<HostDto> getAllHosts() {
         List<Host> hostList = hostService.getAllHosts();
         return hostList.stream().map(HostDto::of).collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/{id}")
     public HostDto getHostById(@PathVariable("id") Long id) {
         return HostDto.of(hostService.findById(id));
@@ -53,12 +55,14 @@ public class HostController {
         return BaseResponse.successMessage();
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/check/{id}")
     public BaseResponse<HostStatusDto> checkHost(@PathVariable("id") Long id) {
         HostStatusDto hostStatusDto = hostService.checkHostStatus(id);
         return BaseResponse.success(hostStatusDto);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/check-all")
     public BaseResponse<List<HostStatusDto>> getAllHostsStatus() {
         return BaseResponse.success(hostService.checkHostStatusAll());

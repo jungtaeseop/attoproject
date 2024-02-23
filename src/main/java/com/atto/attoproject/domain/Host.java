@@ -24,7 +24,7 @@ public class Host extends BaseEntity {
     @Column(unique = true)
     private String ip;
 
-    @OneToOne(mappedBy = "host", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "host", cascade = CascadeType.ALL)
     private HostStatus status;
 
     public Host(HostDto hostDto) {

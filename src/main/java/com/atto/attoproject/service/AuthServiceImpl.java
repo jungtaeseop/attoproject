@@ -34,25 +34,32 @@ public class AuthServiceImpl implements AuthService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
     private final TokenBlacklistService tokenBlacklistService;
+    private final AuditLogService auditLogService;
 
     @Override
     public JwtResponse authenticateUserJwtResponse(LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUserId(), loginRequest.getPassword()));
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUserId(), loginRequest.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.createToken(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtUtils.createToken(authentication);
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            List<String> roles = userDetails.getAuthorities().stream()
+                    .map(item -> item.getAuthority())
+                    .collect(Collectors.toList());
 
-        return new JwtResponse(jwt,
-                userDetails.getId(),
-                userDetails.getUserId(),
-                userDetails.getUsername(),
-                roles);
+            auditLogService.addLoginSuccessAuditLog();
+            return new JwtResponse(jwt,
+                    userDetails.getId(),
+                    userDetails.getUserId(),
+                    userDetails.getUsername(),
+                    roles);
+        } catch (RuntimeException e) {
+            auditLogService.addLoginFailureAuditLog();
+            throw CustomException.of("400", "로그인 실패 Log : " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override

@@ -2,11 +2,13 @@ package com.atto.attoproject.service;
 
 import com.atto.attoproject.config.exception.error.CustomException;
 import com.atto.attoproject.config.security.jwt.JwtUtils;
+import com.atto.attoproject.data.AuditLogDto;
 import com.atto.attoproject.domain.AuditLog;
 import com.atto.attoproject.domain.User;
 import com.atto.attoproject.repository.AuditLogRepository;
 import com.atto.attoproject.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -37,6 +39,27 @@ public class AuditLogServiceImpl implements AuditLogService{
         User user = getUser();
         AuditLog auditLog = AuditLog.of(LocalDateTime.now(),"LOGOUT","FAILURE", user);
         auditLogRepository.save(auditLog);
+    }
+
+    @Transactional
+    @Override
+    public void addLoginSuccessAuditLog() {
+        User user = getUser();
+        AuditLog auditLog = AuditLog.of(LocalDateTime.now(),"LOGIN","SUCCESS", user);
+        auditLogRepository.save(auditLog);
+    }
+
+    @Transactional
+    @Override
+    public void addLoginFailureAuditLog() {
+        User user = getUser();
+        AuditLog auditLog = AuditLog.of(LocalDateTime.now(),"LOGIN","FAILURE", user);
+        auditLogRepository.save(auditLog);
+    }
+
+    @Override
+    public List<AuditLogDto> getAllAuditlog() {
+        return auditLogRepository.findAllAuditLogDto();
     }
 
     private User getUser() {
