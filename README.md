@@ -1,9 +1,23 @@
+## 실행 방법
 
-## POST 로그인계정 만들기
+이 프로젝트는 postgresql 데이터베이스를 사용합니다. 다음과 같은 순서로 실행해주세요.
+
+1. DDL 폴더에 있는 ddlfile.sql 파일을 postgresql에서 실행합니다.
+2. attoproject.jar 파일이 있는 폴더로 이동합니다.
+3. attoproject.jar 파일을 실행합니다. 다음과 같은 명령어를 입력합니다. 이때, DB서버 ip, DB서버 port, DB명, DB 계정, 계정 패스워드는 자신의 환경에 맞게 변경해주세요.
+
+- localhost:5432/attodb  == DB서버 ip : DB서버 port / DB명 
+- atto == DB 계정 
+- atto1234 == 계정 패스워드
+
+`java -jar .\attoproject.jar -Dspring.datasource.url=jdbc:postgresql://localhost:5432/attodb -Dspring.datasource.username=atto -Dspring.datasource.password=atto1234`
+
+## POST 새로운 사용자 계정 생성하는 API
 
 http://localhost:8081/api/auth/signup
 
-- Body json
+- Request Body: JSON
+- "role": ["admin"], 또는 "role": ["user"]
 
 `{
 "username":"관리자1",
@@ -17,7 +31,7 @@ http://localhost:8081/api/auth/signup
 ## POST 로그인
 http://localhost:8081/api/auth/signin
 
-- json
+- Request Body: JSON
 
 `{
     "userId":"rabc1",
@@ -39,7 +53,9 @@ http://localhost:8081/api/hosts
 
 - Request Headers
 - Authorization : Bearer {{token}}
-- Body json
+
+
+-  Request Body: JSON
 
 `{
     "name":"네트워크1",
@@ -69,7 +85,8 @@ http://localhost:8081/api/hosts/{host_id}
 - Request Headers
 - Authorization : Bearer {{token}}
 
-- Body json
+
+- Request Body: JSON
 
 `{
 "name":"server1",
