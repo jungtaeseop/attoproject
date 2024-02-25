@@ -10,7 +10,10 @@
 - atto == DB 계정 
 - atto1234 == 계정 패스워드
 
-`java -jar .\attoproject.jar -Dspring.datasource.url=jdbc:postgresql://localhost:5432/attodb -Dspring.datasource.username=atto -Dspring.datasource.password=atto1234`
+- 외부 properties를 사용하는 방식 
+- test.properties에서 원하시는 DB 계정과 패스워드 등 변경 하시고 실행
+
+`java -jar attoproject.jar --spring.config.location=file:./test.properties`
 
 ## POST 새로운 사용자 계정 생성하는 API
 
