@@ -1,17 +1,13 @@
 package com.atto.attoproject.controller;
 
 import com.atto.attoproject.config.basedto.BaseResponse;
-import com.atto.attoproject.config.exception.error.CustomException;
 import com.atto.attoproject.data.HostStatusDto;
 import com.atto.attoproject.data.request.HostRequest;
 import com.atto.attoproject.data.HostDto;
 import com.atto.attoproject.domain.Host;
-import com.atto.attoproject.domain.HostStatus;
 import com.atto.attoproject.service.HostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,32 +24,32 @@ public class HostController {
     @PostMapping
     public HostDto registerHost(@Valid @RequestBody HostRequest hostRequest){
         Host host = hostService.registerHost(hostRequest.toDto());
-        return HostDto.of(host);
+        return HostDto.from(host);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/list")
     public List<HostDto> getAllHosts() {
         List<Host> hostList = hostService.getAllHosts();
-        return hostList.stream().map(HostDto::of).collect(Collectors.toList());
+        return hostList.stream().map(HostDto::from).collect(Collectors.toList());
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/{id}")
     public HostDto getHostById(@PathVariable("id") Long id) {
-        return HostDto.of(hostService.findById(id));
+        return HostDto.from(hostService.findById(id));
     }
 
     @PutMapping("/{id}")
     public HostDto updateHost(@PathVariable("id") Long id, @Valid @RequestBody HostRequest hostRequest) {
         Host host = hostService.updateHost(id, hostRequest.toDto());
-        return HostDto.of(host);
+        return HostDto.from(host);
     }
 
     @DeleteMapping("/{id}")
     public BaseResponse<?> deleteHost(@PathVariable("id") Long id) {
         hostService.delete(id);
-        return BaseResponse.successMessage();
+        return BaseResponse.successMessage("삭제 성공입니다.");
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")

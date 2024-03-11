@@ -3,14 +3,13 @@ package com.atto.attoproject.config.security;
 
 import com.atto.attoproject.config.security.jwt.AuthEntryPointJwt;
 import com.atto.attoproject.config.security.jwt.AuthTokenFilter;
+import com.atto.attoproject.config.security.jwt.CustomAuthenticationFilter;
 import com.atto.attoproject.config.security.jwt.JwtUtils;
 import com.atto.attoproject.service.TokenBlacklistService;
-import com.atto.attoproject.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +17,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableMethodSecurity
@@ -26,22 +27,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
     private final JwtUtils jwtUtils;
     private final TokenBlacklistService tokenBlacklistService;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final AuthenticationConfiguration authenticationConfiguration;
     private final AuthEntryPointJwt unauthorizedHandler;
+    private final AuthenticationSuccessHandler authenticationSuccessHandler;
+    private final AuthenticationFailureHandler authenticationFailureHandler;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter(jwtUtils, tokenBlacklistService);
-    }
-
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-
-        return authProvider;
     }
 
 
@@ -68,10 +61,20 @@ public class WebSecurityConfig {
                         ///api/auth/** 및 /api/test/** 경로는 인증 없이 허용 그 외 모든 요청은 인증 필요
                 );
 
-        http.authenticationProvider(authenticationProvider()); //인증 공급자 설정
-
+        http.addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); //인증 공급자 설정
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public CustomAuthenticationFilter customAuthenticationFilter() throws Exception {
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationConfiguration.getAuthenticationManager());
+
+        customAuthenticationFilter.setFilterProcessesUrl("/api/auth/login");
+        customAuthenticationFilter.setAuthenticationSuccessHandler(authenticationSuccessHandler);      // '인증' 성공 시 해당 핸들러로 처리를 전가한다.
+        customAuthenticationFilter.setAuthenticationFailureHandler(authenticationFailureHandler);      // '인증' 실패 시 해당 핸들러로 처리를 전가한다.
+        customAuthenticationFilter.afterPropertiesSet();
+        return customAuthenticationFilter;
     }
 }

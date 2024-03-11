@@ -25,8 +25,13 @@ public class HostDto extends BaseDto {
         this.lastModifiedDate = host.getLastModifiedDate();
     }
 
-    public static HostDto of(Host host) {
+    public static HostDto from(Host host) {
         return new HostDto(host);
     }
+
+    public static HostDto of(String name, String ip) {
+        return new HostDto(name, ip);
+    }
+
 
 }

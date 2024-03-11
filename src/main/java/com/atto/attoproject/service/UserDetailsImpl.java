@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+
 public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
@@ -21,14 +22,17 @@ public class UserDetailsImpl implements UserDetails {
     @JsonIgnore
     private String password;
 
+    private Integer failedLoginAttempts;
+
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String username, String userId, String password,
-                           Collection<? extends GrantedAuthority> authorities) {
+    public UserDetailsImpl(Long id, String username, String userId, String password
+                           , Integer failedLoginAttempts,Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.userId = userId;
         this.password = password;
+        this.failedLoginAttempts = failedLoginAttempts;
         this.authorities = authorities;
     }
 
@@ -43,7 +47,12 @@ public class UserDetailsImpl implements UserDetails {
                 user.getUsername(),
                 user.getUserId(),
                 user.getPassword(),
+                user.getFailedLoginAttempts(),
                 authorities);
+    }
+
+    public int getFailedLoginAttempts() {
+        return failedLoginAttempts;
     }
 
     public Long getId() {
@@ -52,6 +61,10 @@ public class UserDetailsImpl implements UserDetails {
 
     public String getUserId() {
         return userId;
+    }
+
+    public void setFailedLoginAttempts(Integer failedLoginAttempts) {
+        this.failedLoginAttempts = failedLoginAttempts;
     }
 
     @Override

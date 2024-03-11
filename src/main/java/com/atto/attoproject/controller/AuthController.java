@@ -1,5 +1,7 @@
 package com.atto.attoproject.controller;
 
+import com.atto.attoproject.config.basedto.BaseResponse;
+import com.atto.attoproject.config.exception.error.CustomException;
 import com.atto.attoproject.data.request.LoginRequest;
 import com.atto.attoproject.data.request.SignupRequest;
 import com.atto.attoproject.data.response.JwtResponse;
@@ -30,26 +32,26 @@ public class AuthController {
     private final AuditLogService auditLogService;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    public BaseResponse<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
         JwtResponse jwtResponse = authService.authenticateUserJwtResponse(loginRequest);
-        return ResponseEntity.ok(jwtResponse);
+        return BaseResponse.success(jwtResponse);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+    public BaseResponse<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         authService.registerUser(signUpRequest);
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        return BaseResponse.successMessage("사용자가 성공적으로 등록되었습니다.");
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
+    public BaseResponse<?> logout(HttpServletRequest request) {
         try {
             String message = authService.logoutUser(request);
             auditLogService.addLogoutSuccessAuditLog();
-            return ResponseEntity.ok(message);
+            return BaseResponse.successMessage(message);
         } catch (IllegalStateException e) {
             auditLogService.addLogoutFailureAuditLog();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            throw CustomException.of("500", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

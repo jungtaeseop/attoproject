@@ -73,15 +73,18 @@ public class AuthServiceImpl implements AuthService {
     public String logoutUser(HttpServletRequest request) {
         String token = jwtUtils.resolveToken(request);
         tokenBlacklistService.addToBlacklist(token);
-        return "Logged out successfully";
+        return "로그아웃 성공되었습니다.";
     }
 
 
     private User createUserFromRequest(SignupRequest signUpRequest) {
         Set<Role> roles = determineUserRoles(signUpRequest);
-        User user = new User(signUpRequest.getUsername(),
-                signUpRequest.getUserId(),
-                encoder.encode(signUpRequest.getPassword()), roles);
+        User user = new User(
+                signUpRequest.getUserId()
+                , encoder.encode(signUpRequest.getPassword())
+                , signUpRequest.getUsername()
+                ,0
+                , roles);
 
         return user;
     }

@@ -36,8 +36,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 Authentication authentication = jwtUtils.getAuthentication(token);
                 // Authentication 저장
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            }else {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             }
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e);

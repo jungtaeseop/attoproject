@@ -87,21 +87,12 @@ public class HostServiceImpl implements HostService {
         List<CompletableFuture<HostStatusDto>> futures = hostStatuses.stream()
                 .map(hostStatusDto -> CompletableFuture.supplyAsync(() -> checkHostStatus(hostStatusDto), executorService))
                 .collect(Collectors.toList());
-        try {
 
-            return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
-                    .thenApply(v -> futures.stream()
-                            .map(CompletableFuture::join)
-                            .collect(Collectors.toList()))
-                    .get();
-        } catch (InterruptedException | ExecutionException e) {
-            //e.printStackTrace();
-            throw CustomException.of("400","호스트 상태 정보를 가져오는 중 오류 발생", HttpStatus.BAD_REQUEST);
-        } finally {
-            // ExecutorService 종료
-            executorService.shutdown();
-        }
-
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .thenApply(v -> futures.stream()
+                        .map(CompletableFuture::join)
+                        .collect(Collectors.toList()))
+                .join();
     }
 
     @Override

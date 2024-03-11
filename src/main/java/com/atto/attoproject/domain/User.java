@@ -1,14 +1,16 @@
 package com.atto.attoproject.domain;
 
 import com.atto.attoproject.config.basedomain.BaseEntity;
+import com.atto.attoproject.domain.enums.ERole;
+import com.atto.attoproject.service.UserDetailsImpl;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Table(name = "users")
@@ -26,6 +28,8 @@ public class User extends BaseEntity {
   @Column(name = "user_name")
   private String username;
 
+  private Integer failedLoginAttempts;
+
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "user_roles",
           joinColumns = @JoinColumn(name = "user_id"),
@@ -35,13 +39,51 @@ public class User extends BaseEntity {
   @OneToMany(mappedBy = "user" , cascade = CascadeType.PERSIST)
   private List<AuditLog> auditLogs = new ArrayList<>();
 
-  public User(String username, String userId, String password, Set<Role> roles) {
-    this.username = username;
+  public User(String userId, String password, String username, Integer failedLoginAttempts, Set<Role> roles) {
     this.userId = userId;
     this.password = password;
+    this.username = username;
+    this.failedLoginAttempts = failedLoginAttempts;
     this.roles = roles;
   }
 
+  private User(Long id, String userId, String password, String username, Integer failedLoginAttempts, Set<Role> roles) {
+    this.id = id;
+    this.userId = userId;
+    this.password = password;
+    this.username = username;
+    this.failedLoginAttempts = failedLoginAttempts;
+    this.roles = roles;
+  }
+
+  public static User from(UserDetailsImpl userDetailsImpl){
+    return new User(
+             userDetailsImpl.getId()
+            , userDetailsImpl.getUserId()
+            , userDetailsImpl.getPassword()
+            , userDetailsImpl.getUsername()
+            , userDetailsImpl.getFailedLoginAttempts()
+            , toRoleSet(userDetailsImpl.getAuthorities())
+    );
+  }
+
+  private static Set<Role> toRoleSet(Collection<? extends GrantedAuthority> authorities) {
+    return authorities.stream()
+            .map(authority -> {
+              switch (authority.getAuthority()) {
+                case "ROLE_ADMIN":
+                  return new Role(ERole.ROLE_ADMIN);
+                case "ROLE_USER":
+                  return new Role(ERole.ROLE_USER);
+              }
+                return null;
+            })
+            .collect(Collectors.toSet());
+  }
+
+  public Integer getFailedLoginAttempts() {
+    return failedLoginAttempts;
+  }
 
   public Long getId() {
     return id;
