@@ -2,10 +2,7 @@ package com.atto.attoproject.config.security.jwt;
 
 
 import com.atto.attoproject.service.UserDetailsImpl;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Base64;
@@ -90,7 +87,17 @@ public class JwtUtils {
    * @return
    */
   private Claims getClaimsFormToken(String token) {
-    return Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(secretKey)).parseClaimsJws(token).getBody();
+    // Base64로 인코딩된 비밀키를 바이트 배열로 변환
+    byte[] secretKeyBytes = DatatypeConverter.parseBase64Binary(secretKey);
+
+    // 토큰 파서를 생성하고, 서명 검증을 위해 비밀키를 설정
+    Jws<Claims> claimsJws = Jwts.parser()
+            .setSigningKey(secretKeyBytes)
+            .parseClaimsJws(token);
+
+    // 토큰의 바디 부분(클레임)을 가져와 반환
+    return claimsJws.getBody();
+    // return Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(secretKey)).parseClaimsJws(token).getBody();
   }
 
   /**
