@@ -26,7 +26,7 @@ public class JwtUtils {
   public static final String BEARER_PREFIX = "Bearer ";
 
   // 토큰 유효시간 30분
-  private long tokenValidTime = 60 * 60 * 1000L;
+  private long tokenValidTime = 24 * 60 * 60 * 1000L;
 
   @Value("${jwt.secret-key}")
   private String secretKey;

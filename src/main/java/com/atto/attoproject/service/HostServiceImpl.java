@@ -81,7 +81,7 @@ public class HostServiceImpl implements HostService {
         List<HostStatusDto> hostStatuses = hostStatusRepository.findByAllHostAndHostsStatus();
 
         // ExecutorService 생성 (적절한 스레드 풀 크기 설정)
-        ExecutorService executorService = Executors.newCachedThreadPool();
+        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
         // CompletableFuture.supplyAsync 사용하여 비동기 실행
         List<CompletableFuture<HostStatusDto>> futures = hostStatuses.stream()
