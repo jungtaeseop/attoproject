@@ -98,8 +98,7 @@ public class HostServiceImpl implements HostService {
 
     public HostStatusDto checkHostStatus(Host host) {
         host.updateHostStatus();
-        HostStatusDto hostStatusDto = host.fromHostDto();
-        return hostStatusDto;
+        return HostStatusDto.from(host);
     }
 
     private void validateUniqueNameAndIp(HostDto hostDto) {

@@ -51,10 +51,6 @@ public class Host extends BaseEntity {
         this.status = HostStatus.from(this);
     }
 
-    public HostStatusDto fromHostDto() {
-        return HostStatusDto.from(this);
-    }
-
     public void updateHostStatus() {
         this.status = HostStatus.from(this);
     }
