@@ -2,6 +2,7 @@ package com.atto.attoproject.data;
 
 import com.atto.attoproject.config.basedto.BaseDto;
 import com.atto.attoproject.domain.Host;
+import com.atto.attoproject.domain.HostStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,6 +11,7 @@ public class HostDto extends BaseDto {
     private Long id;
     private String name;
     private String ip;
+    private HostStatus status;
 
     @Builder
     public HostDto(String name, String ip) {

@@ -2,6 +2,7 @@ package com.atto.attoproject.domain;
 
 import com.atto.attoproject.config.basedomain.BaseEntity;
 import com.atto.attoproject.data.HostDto;
+import com.atto.attoproject.data.HostStatusDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,12 +25,13 @@ public class Host extends BaseEntity {
     @Column(unique = true)
     private String ip;
 
-    @OneToOne(mappedBy = "host", cascade = CascadeType.ALL)
+    @Embedded
     private HostStatus status;
 
     public Host(HostDto hostDto) {
         this.name = hostDto.getName();
         this.ip = hostDto.getIp();
+        this.status = hostDto.getStatus();
     }
 
     public static Host of(HostDto hostDto) {
@@ -45,4 +47,15 @@ public class Host extends BaseEntity {
         }
     }
 
+    public void createHostStatus() {
+        this.status = HostStatus.from(this);
+    }
+
+    public HostStatusDto fromHostDto() {
+        return HostStatusDto.from(this);
+    }
+
+    public void updateHostStatus() {
+        this.status = HostStatus.from(this);
+    }
 }

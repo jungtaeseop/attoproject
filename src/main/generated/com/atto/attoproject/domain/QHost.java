@@ -56,7 +56,7 @@ public class QHost extends EntityPathBase<Host> {
 
     public QHost(Class<? extends Host> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.status = inits.isInitialized("status") ? new QHostStatus(forProperty("status"), inits.get("status")) : null;
+        this.status = inits.isInitialized("status") ? new QHostStatus(forProperty("status")) : null;
     }
 
 }

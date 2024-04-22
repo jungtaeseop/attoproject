@@ -6,7 +6,6 @@ import com.atto.attoproject.data.HostStatusDto;
 import com.atto.attoproject.domain.Host;
 import com.atto.attoproject.domain.HostStatus;
 import com.atto.attoproject.repository.HostRepository;
-import com.atto.attoproject.repository.HostStatusRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -23,17 +21,15 @@ import java.util.stream.Collectors;
 @Service
 public class HostServiceImpl implements HostService {
     private final HostRepository hostRepository;
-    private final HostStatusRepository hostStatusRepository;
 
     @Transactional
     @Override
     public Host registerHost(HostDto hostDto) {
         validateUniqueNameAndIp(hostDto);
         limitDevices100();
-        Host saveHost = hostRepository.save(Host.of(hostDto));
 
-        HostStatus hostStatus = HostStatus.from(saveHost);
-        hostStatusRepository.save(hostStatus);
+        Host saveHost = hostRepository.save(Host.of(hostDto));
+        saveHost.createHostStatus();
         return saveHost;
     }
 
@@ -69,23 +65,23 @@ public class HostServiceImpl implements HostService {
     @Transactional
     @Override
     public HostStatusDto checkHostStatus(Long id) {
-        HostStatus hostStatus = hostStatusRepository.findById(id)
+        Host host = hostRepository.findById(id)
                 .orElseThrow(() -> CustomException.of("404", "host 값을 찾을수 없습니다.", HttpStatus.BAD_REQUEST));
-        hostStatus.updateStatus();
-        return hostStatusRepository.findByCheckId(id);
+        host.updateHostStatus();
+        return hostRepository.findByHostStatusCheckId(id);
     }
 
     @Transactional
     @Override
     public List<HostStatusDto> checkHostStatusAll() {
-        List<HostStatusDto> hostStatuses = hostStatusRepository.findByAllHostAndHostsStatus();
+        List<Host> hosts = hostRepository.findAll();
 
         // ExecutorService 생성 (적절한 스레드 풀 크기 설정)
         ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
         // CompletableFuture.supplyAsync 사용하여 비동기 실행
-        List<CompletableFuture<HostStatusDto>> futures = hostStatuses.stream()
-                .map(hostStatusDto -> CompletableFuture.supplyAsync(() -> checkHostStatus(hostStatusDto), executorService))
+        List<CompletableFuture<HostStatusDto>> futures = hosts.stream()
+                .map(host -> CompletableFuture.supplyAsync(() -> checkHostStatus(host), executorService))
                 .collect(Collectors.toList());
 
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
@@ -97,11 +93,12 @@ public class HostServiceImpl implements HostService {
 
     @Override
     public List<HostStatusDto> getAllHostsStatus() {
-        return hostStatusRepository.findByAllHostAndHostsStatus();
+        return hostRepository.findByAllHostsStatus();
     }
 
-    public HostStatusDto checkHostStatus(HostStatusDto hostStatusDto) {
-        hostStatusDto.updateStatus(); // 상태 업데이트 메소드 호출
+    public HostStatusDto checkHostStatus(Host host) {
+        host.updateHostStatus();
+        HostStatusDto hostStatusDto = host.fromHostDto();
         return hostStatusDto;
     }
 

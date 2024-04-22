@@ -1,6 +1,7 @@
 package com.atto.attoproject.data;
 
 import com.atto.attoproject.config.exception.error.CustomException;
+import com.atto.attoproject.domain.Host;
 import com.atto.attoproject.domain.HostStatus;
 import com.atto.attoproject.domain.enums.Alive;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -25,24 +26,16 @@ public class HostStatusDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime lastStatusCheckeDate;
 
-    public HostStatusDto(HostStatus hostStatus) {
-        this.id = hostStatus.getId();
-        this.alive = hostStatus.getAlive();
-        this.lastStatusCheckeDate = hostStatus.getLastStatusCheckeDate();
+    public HostStatusDto(Host host) {
+        this.id = host.getId();
+        this.ip = host.getIp();
+        this.name = host.getName();
+        this.alive = host.getStatus().getAlive();
+        this.lastStatusCheckeDate = host.getStatus().getLastStatusCheckeDate();
     }
 
-    public static HostStatusDto of(HostStatus hostStatus) {
-        return new HostStatusDto(hostStatus);
+    public static HostStatusDto from(Host host) {
+        return new HostStatusDto(host);
     }
 
-    public void updateStatus() {
-        try {
-            InetAddress address = InetAddress.getByName(this.ip);
-            this.alive = address.isReachable(100) ? Alive.Enabled : Alive.Disabled;
-            this.lastStatusCheckeDate = LocalDateTime.now();
-        } catch (Exception e) {
-            //e.printStackTrace();
-            throw CustomException.of("400","host check 중 오류", HttpStatus.BAD_REQUEST);
-        }
-    }
 }
